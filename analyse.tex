@@ -1,0 +1,160 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french,francais]{babel}
+\usepackage{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{numprint}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{color}
+\usepackage{longtable}
+
+\geometry{
+	body={160mm,250mm},
+	left=25mm,top=25mm,
+	headheight=7mm,
+	headsep=4mm,
+	marginparsep=4mm,
+	marginparwidth=21mm}
+\lstset{basicstyle=\footnotesize,
+		breaklines=true,
+		language=bash,
+		frame=single,
+		showstringspaces=false}
+
+
+
+\newcommand{\Course}{EPHEC} % Course/class
+\newcommand{\AuthorName}{Groupe 3TL1.4} % Your name
+\newcommand{\Date}{Décembre 2014}
+
+\title{
+\parbox{15cm}
+{\includegraphics[width=4cm]{ephec.png} \\ 
+  Louvain-la-neuve\\
+  \vspace{3cm}
+	\begin{center}\sf\bfseries\Huge
+		\rule{15cm}{1pt}
+		\medskip
+		Sécurité des réseaux informatiques TP \\
+		\huge Projet - Iptables\\
+		\vspace{.5cm}
+		\Large Rapport d'analyse du groupe 3TL2.4
+		\vspace{.5cm}
+		\rule{15cm}{1pt}
+		\large Groupe 3TL1.4
+	\end{center}
+	\vspace{3cm}
+}} 
+\author{Herrier Lucie \and Juckler Christian \and (Musuvaho Grace) \and Nyssens Sylvain}
+\date{\today}
+
+\begin{document}
+\maketitle
+\newpage
+\section{Introduction}
+Ce document présente l'analyse que nous avons faite du travail réalisé par le groupe 2TL2.4. Nous avons reçu leur travail, et nous avons par la suite testé leur configuration iptables avec nos scripts et procédures de validation. Nous avons pris leur configuration stockée dans les scripts \texttt{config\_FW1.sh, config\_FW2.sh, config\_FW3.sh}. Notons toutefois que leur rapport contient des règles tout autres. Nous n'avons pas testé ces règles, car elles ne devaient pas êtres comprises dans le rapport. Nous expliquons ci-dessous les résultats obtenus lors de nos tests sur les scripts pour chacun des firewalls configurés. Enfin, nous concluons sur la sécurité de la configuration du groupe 2TL2.4.
+
+
+\section{Validation}
+La plupart des validations décrites ci-dessous ont été réalisée en tapant les commandes à la main. Nous avons également exécuté nos scripts de validations écrits dans le cadre de notre configuration.
+
+\subsection{Validation du FW1}
+\begin{longtable}{|p{8cm}|p{3cm}|p{3cm}|}
+\hline
+Script FW2 sur machine & Résultat espéré & Résultat obtenu avec règles\\
+\hline
+U1 et U2 : lynx (http et https) vers www.paranoyak.com via la commande \texttt{lynx http(s)://192.168.7.10} &  OK pour HTTP, pas moyen de tester HTTPS  & Ne fonctionne pas \\
+\hline 
+R1 et R2 : test du local dns via la commande \texttt{nslookup www.paranoyak.com}. Aussi testé avec un nom de machine via la commande \texttt{nslookup SSH} \ & OK  & Ne fonctionne pas  \\
+\hline 
+R1 et R2 : lynx (http et https) vers www.paranoyak.com via la commande \texttt{lynx http(s)://192.168.7.10} &  OK pour HTTP, pas moyen de tester HTTPS & Ne fonctionne pas \\
+\hline 
+R1 et R2 : envoi et réception d'email avec bill sur R1 et steve sur R2, communicant entre eux à l'aide de \texttt{mutt} & OK & Ne fonctionne pas \\
+\hline 
+R1 : connexion ssh à processor via la commande \texttt{ssh 192.168.4.10} & OK & Ne fonctionne pas \\
+\hline
+R2 : connexion ssh à processor via la commande \texttt{ssh 192.168.4.10} & Not OK & Not OK (coup de chance)\\
+\hline
+R2 : connexion ssh à SSH via la commande \texttt{ssh 192.168.1.10} & OK & Ne fonctionne pas\\
+\hline
+R1 et R2 : ftp vers FTP via la commande \texttt{ftp 192.168.1.11} & OK & Ne fonctionne pas  \\
+\hline
+R1 et R2 : connexion au serveur NFS lors du boot de la machine et échange de fichiers via /home/sharing & OK & Ne fonctionne pas \\
+\hline
+R1 et R2 : faire un backup de fichier sur rsync. Sur R1, avec login bill et un fichier coucou.txt, on fait la commande \texttt{rsync -v test.txt bill@192.168.7.12::backup\_ bill} & OK & Ne fonctionne pas \\
+\hline
+T1 : test du public dns via la commande \texttt{nslookup www.paranoyak.com} et les autres noms de domaine & OK  & Ne fonctionne pas -> suite avec les adresses IP.  \\
+\hline 
+T1 : lynx vers www.paranoyak.com via la commande \texttt{lynx 192.168.7.10} & OK pour HTTP & Ne fonctionne pas \\
+\hline 
+T1 : envoi réception de mail via \texttt{mutt}, loggué en tant que steve sur la machine & OK & Ne fonctionne pas \\
+\hline
+T1 : connexion à SSH via la commande \texttt{ssh 192.168.1.10}, loggué en tant que steve sur la machine & OK & Ne fonctionne pas \\
+\hline
+\end{longtable}
+
+\emph{Au vu des résultats obtenus ci-dessus avec les commandes entrées à la main, et après lecture de leurs scripts de validation, nous avons jugé qu'il n'était pas nécessaire de tester les connexions avec les scripts.}
+\subsection{Validation du FW2}
+\begin{longtable}{|p{8cm}|p{3cm}|p{3cm}|}
+\hline
+Script FW2 sur machine & Résultat espéré & Résultat obtenu avec règles\\
+\hline
+U1 et U2 : test du local dns via la commande \texttt{nslookup www.paranoyak.com}. Aussi testé avec un nom de machine via la commande \texttt{nslookup SSH} \ & OK  & Ne fonctionne pas  \\
+\hline 
+U1 : lynx (http et https) vers www.paranoyak.com via la commande \texttt{lynx http(s)://www.paranoyak.com} &  OK pour HTTP, pas moyen de tester HTTPS & Ne fonctionne pas \\
+\hline 
+U2 : lynx (http et https) vers www.paranoyak.com via la commande \texttt{lynx http(s):/www.paranoyak.com} &  OK pour HTTP, pas moyen de tester HTTPS & Ne fonctionne pas\\
+\hline 
+U1 : envoi de mail de Bill à Steve via \texttt{mutt}, loggué en tant que bill sur la machine & OK & Ne fonctionne pas \\
+\hline
+U2 : réception de mail de Steve à Bill via \texttt{mutt}, loggué en tant que steve sur la machine & OK & Ne fonctionne pas \\
+\hline
+\end{longtable}
+\emph{Au vu des résultats obtenus ci-dessus avec les commandes entrées à la main, et après lecture de leurs scripts de validation, nous avons jugé qu'il n'était pas nécessaire de tester les connexions avec les scripts.}
+
+\subsection{Validation du FW3}
+\begin{longtable}{|p{8cm}|p{3cm}|p{3cm}|}
+\hline
+Script FW3 sur machine & Résultat espéré & Résultat obtenu avec règles\\
+\hline 
+processor : résolution de noms à l'aide du LDNS \texttt{nslookup SSH} & OK & Ne fonctionne pas -> suite des commandes avec les adresses IP. \\
+\hline
+R1 : connexion ssh à processor via la commande \texttt{ssh 192.168.4.10} & OK & Ne fonctionne pas. \\
+\hline
+R2 : connexion ssh à processor via la commande \texttt{ssh 192.168.4.10} & Not OK & Not OK (coup de chance) \\
+\hline
+SSH : connexion ssh à processor via la commande \texttt{ssh 192.168.4.10} & OK & Ne fonctionne pas \\
+\hline
+processor : ftp vers FTP via la commande \texttt{ftp FTP} & OK & Ne fonctionne pas  \\
+\hline
+processor : lynx vers www.paranoyak.com via la commande \texttt{lynx www.paranoyak.com} & Not OK & Not OK (coup de chance)\\
+\hline
+\end{longtable}
+\emph{Au vu des résultats obtenus ci-dessus avec les commandes entrées à la main, et après lecture de leurs scripts de validation, nous avons jugé qu'il n'était pas nécessaire de tester les connexions avec les scripts.}
+
+\section{Remarques}
+\begin{enumerate}
+\item Nous avons eu du mal à pouvoir démarrer leur labo. En effet, les fichiers de configuration étaient mal encodés pour certains caractères. Ceci fait que nous avons du les modifier avant de pouvoir les exécuter. Par ailleurs, nous avons du supprimer les lignes de commentaires, celles-ci contenant des accents ne passant pas lors du démarrage du labo netkit.
+\item Lors du démarrage du FW1, celui-ci a affiché des erreurs de type \texttt{Bad argument} et \texttt{Can't use -i with OUTPUT}.
+
+\item Nous avons constaté ce qui semble être une erreur au niveau de la configuration de l'OUTPUT du FW3, qu'ils ont mis par défaut en ACCEPT, et pour lequel le groupe 3TL2.4 à défini par la suite d'autres règles ACCEPT.
+\item Lors du démarrage du FW3, celui-ci a affiché une erreur de type \texttt{No chain/target/match by that name}.
+\end{enumerate}
+
+
+\section{Conclusion}
+Au terme de cette analyse nous pouvons conclure que le labo netkit, sur base des scripts \texttt{config\_FW1.sh, config\_FW2.sh, config\_FW3.sh}, ne fonctionne pas. Nous pensons toutefois que la configuration figurant dans le rapport du groupe 3TL2.4 aurait pu fonctionner. Nous ne l'avons cependant pas testée, ce n'est pas dans le contrat. Les scripts de validations qu'ils ont réalisés étaient prévu notamment pour être excutés sur les firewalls, ce qui les a probablement induit en erreur. \\
+
+En ce qui concerne la sécurité de leur réseau, rien ne peut passer, mis à part un trafic directement vers ou depuis les différents firewalls. Des règles en FORWARD auraient résolu ce problème. Nous ne pouvons pas vraiment statuer sur la sécurité de leur configuration. Au stade où nous l'avons testé, il était trop sécurisé. Certes, ce qui doit être évité comme connexion l'est comme demandé. Les règles étant mal implémentée, nous ne pouvons pas plus nous prononcer sur le sujet.
+
+
+
+\end{document}
