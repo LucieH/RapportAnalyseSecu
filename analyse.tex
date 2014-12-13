@@ -91,7 +91,7 @@ R1 et R2 : connexion au serveur NFS lors du boot de la machine et échange de fi
 \hline
 R1 et R2 : faire un backup de fichier sur rsync. Sur R1, avec login bill et un fichier coucou.txt, on fait la commande \texttt{rsync -v test.txt bill@192.168.7.12::backup\_ bill} & OK & Ne fonctionne pas \\
 \hline
-T1 : test du public dns via la commande \texttt{nslookup www.paranoyak.com} et les autres noms de domaine & OK  & Ne fonctionne pas -> suite avec les adresses IP.  \\
+T1 : test du public dns via la commande \texttt{nslookup www.paranoyak.com} et les autres noms de domaine & OK  & Ne fonctionne pas $->$ suite avec les adresses IP.  \\
 \hline 
 T1 : lynx vers www.paranoyak.com via la commande \texttt{lynx 192.168.7.10} & OK pour HTTP & Ne fonctionne pas \\
 \hline 
@@ -151,10 +151,9 @@ processor : lynx vers www.paranoyak.com via la commande \texttt{lynx www.paranoy
 
 
 \section{Conclusion}
-Au terme de cette analyse nous pouvons conclure que le labo netkit, sur base des scripts \texttt{config\_FW1.sh, config\_FW2.sh, config\_FW3.sh}, ne fonctionne pas. Nous pensons toutefois que la configuration figurant dans le rapport du groupe 3TL2.4 aurait pu fonctionner. Nous ne l'avons cependant pas testée, ce n'est pas dans le contrat. Les scripts de validations qu'ils ont réalisés étaient prévu notamment pour être excutés sur les firewalls, ce qui les a probablement induit en erreur. \\
+Au terme de cette analyse nous pouvons conclure que le labo netkit, sur base des scripts \texttt{config\_FW1.sh, config\_FW2.sh, config\_FW3.sh}, ne fonctionne pas. Nous pensons toutefois que la configuration figurant dans le rapport du groupe 3TL2.4 aurait pu fonctionner. Nous ne l'avons cependant pas testée, ce n'est pas dans le contrat. Les scripts de validations qu'ils ont réalisés étaient prévu notamment pour être exécutés sur les firewalls, ce qui les a probablement induit en erreur. \\
 
 En ce qui concerne la sécurité de leur réseau, rien ne peut passer, mis à part un trafic directement vers ou depuis les différents firewalls. Des règles en FORWARD auraient résolu ce problème. Nous ne pouvons pas vraiment statuer sur la sécurité de leur configuration. Au stade où nous l'avons testé, il était trop sécurisé. Certes, ce qui doit être évité comme connexion l'est comme demandé. Les règles étant mal implémentée, nous ne pouvons pas plus nous prononcer sur le sujet.
-
-
+Notons que la policy par défaut des OUPUTS était en ACCEPT, ceci est contraire à une bonne pratique de sécurité. Surtout que la policy de ACCEPT et FORWARD étaient en DROP.
 
 \end{document}
